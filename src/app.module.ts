@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from './users/user.module';
 import { ConfigModule } from '@nestjs/config';
+import { AdminsModule } from './admins/admins.module';
 import * as Joi from 'joi';
 
 @Module({
@@ -22,6 +23,7 @@ import * as Joi from 'joi';
       `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}`,
     ),
     UsersModule,
+    AdminsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
