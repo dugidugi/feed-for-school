@@ -1,14 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument, SchemaTypes } from 'mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
 import { Admin } from 'src/admins/schemas/admin.schema';
 
 export type SchoolDocument = HydratedDocument<School>;
 
-@Schema()
+@Schema({ timestamps: true, id: false })
 export class School {
-  @Prop({ type: SchemaTypes.ObjectId })
-  id: string;
-
   @Prop({ required: true })
   name: string;
 
