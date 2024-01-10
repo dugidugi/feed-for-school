@@ -6,7 +6,6 @@ import { UsersModule } from './users/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { AdminsModule } from './admins/admins.module';
 import { SchoolsModule } from './schools/schools.module';
-import { SchollsController } from './scholls/scholls.controller';
 import * as Joi from 'joi';
 
 @Module({
@@ -28,7 +27,7 @@ import * as Joi from 'joi';
     AdminsModule,
     SchoolsModule,
   ],
-  controllers: [AppController, SchollsController],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
