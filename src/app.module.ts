@@ -5,6 +5,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from './users/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { AdminsModule } from './admins/admins.module';
+import { SchoolsModule } from './schools/schools.module';
+import { SchollsController } from './scholls/scholls.controller';
 import * as Joi from 'joi';
 
 @Module({
@@ -24,8 +26,9 @@ import * as Joi from 'joi';
     ),
     UsersModule,
     AdminsModule,
+    SchoolsModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, SchollsController],
   providers: [AppService],
 })
 export class AppModule {}
