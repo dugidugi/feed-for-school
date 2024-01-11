@@ -8,7 +8,6 @@ export class RedisService {
   private readonly redisClient: Redis;
 
   constructor() {
-    // Redis 서버의 호스트와 포트에 맞게 설정
     this.redisClient = new Redis({
       host: process.env.REDIS_HOST,
       port: +process.env.REDIS_POST,
