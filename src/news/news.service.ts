@@ -34,9 +34,7 @@ export class NewsService {
 
     // cache-user:userId:newsfeed (list)
     const schoolId = createdNews.school.toString();
-    console.log({ schoolId });
     const followers = await this.usersService.getFollwersBySchoolId(schoolId);
-    console.log({ followers });
     followers.forEach((followerId) => {
       this.redisService.lpush(`user:${followerId}:newsfeed`, createdNewsId);
     });
