@@ -1,73 +1,61 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Feed for School
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+- [API Documentation]()
+- [Demo URL]()
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 프로젝트
 
-## Description
+학교 소식 뉴스피드 시스템입니다. 이런 기능이 갖춰져 있습니다.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- 학교 관리자
+  - 학교 페이지의 생성
+  - 학교 소식 작성, 수정, 삭제
+- 학생
 
-## Installation
+  - 학교 페이지 구독 @Post('/:userId/following/:schoolId')
+  - 구독중인 학교 페이지 확인 @Get('/:userId/following') TODO-sort
+  - 구독중인 학교 페이지 구독 취소 @Delete('/:userId/following/:schoolId')
+  - 구독중인 학교 페이지별 소식 TODO -> @Get('/:schoolId/news')
+  - 구독중인 전체 학교 뉴스피드 @Get('/:userId/newsfeed')
 
-```bash
-$ npm install
-```
+### 뉴스피드 시스템 설명
 
-## Running the app
+### 고려한 포인트
 
-```bash
-# development
-$ npm run start
+..
 
-# watch mode
-$ npm run start:dev
+### 스택
 
-# production mode
-$ npm run start:prod
-```
+- nest.js
+- mongoDB
+- Redis
 
-## Test
+## 시작하기
 
-```bash
-# unit tests
-$ npm run test
+### Prerequisites
 
-# e2e tests
-$ npm run test:e2e
+- npm
+  ```sh
+  npm install
+  ```
 
-# test coverage
-$ npm run test:cov
-```
+### Installation
 
-## Support
+1. Clone the repo
+   ```sh
+   git clone https://github.com/your_username_/Project-Name.git
+   ```
+2. Install NPM packages
+   ```sh
+   npm install
+   ```
+3. npm start
+   ```js
+   npm start
+   ```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Contact
 
-## Stay in touch
+황유덕 - yooduck.h@gmail.com
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+이력서 링크 - [bit.ly/yooduck_hwang_resume](bit.ly/yooduck_hwang_resume)
