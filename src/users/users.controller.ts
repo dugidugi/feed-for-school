@@ -1,9 +1,21 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './schemas/user.schema';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UserFollow } from './schemas/user-follow.schema';
 import { News } from 'src/news/schemas/news.schema';
+import {
+  PaginationDto,
+  PaginationResponseDto,
+} from 'src/common/dtos/pagination.dto';
 
 @Controller('users')
 export class UsersController {
@@ -41,7 +53,10 @@ export class UsersController {
   }
 
   @Get('/:userId/newsfeed')
-  getNewsFeed(@Param('userId') userId: string): Promise<News[]> {
-    return this.usersService.getUserNewsFeed(userId);
+  getNewsFeed(
+    @Param('userId') userId: string,
+    @Query() paginationDto: PaginationDto,
+  ): Promise<PaginationResponseDto<News>> {
+    return this.usersService.getUserNewsFeed(userId, paginationDto);
   }
 }

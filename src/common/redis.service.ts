@@ -35,4 +35,8 @@ export class RedisService {
   async lrange(key: string, start: number, end: number): Promise<string[]> {
     return this.redisClient.lrange(key, start, end);
   }
+
+  async llen(key: string): Promise<number> {
+    return this.redisClient.llen(key);
+  }
 }

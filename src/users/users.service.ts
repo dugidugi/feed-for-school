@@ -7,6 +7,10 @@ import { CreateUserDto } from './dtos/create-user.dto';
 import { UserFollow } from './schemas/user-follow.schema';
 import { User } from './schemas/user.schema';
 import { NewsService } from 'src/news/news.service';
+import {
+  PaginationDto,
+  PaginationResponseDto,
+} from 'src/common/dtos/pagination.dto';
 
 @Injectable()
 export class UsersService {
@@ -52,18 +56,26 @@ export class UsersService {
     });
   }
 
-  async getUserNewsFeed(userId: string): Promise<News[]> {
+  async getUserNewsFeed(
+    userId: string,
+    paginationDto: PaginationDto,
+  ): Promise<PaginationResponseDto<News>> {
+    const { page, pageSize } = paginationDto;
+    const start = (page - 1) * pageSize;
+    const end = start + pageSize - 1;
+
     const newsIds = await this.redisService.lrange(
       `user:${userId}:newsfeed`,
-      0,
-      -1,
+      start,
+      end,
     );
 
     const news = await Promise.all(
       newsIds.map((newsId) => this.newsService.findById(newsId)),
     );
-    //TODO: SORT, Page 신경쓰기
+    const totalItems = await this.redisService.llen(`user:${userId}:newsfeed`);
+    const totalPages = Math.ceil(totalItems / pageSize);
 
-    return news;
+    return { data: news, totalPages, totalItems };
   }
 }
