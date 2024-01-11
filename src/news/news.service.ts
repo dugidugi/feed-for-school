@@ -7,7 +7,6 @@ import { EditNewsDto } from './dtos/edit-news.dto';
 // import { InjectQueue } from '@nestjs/bull';
 // import { Queue } from 'bull';
 import { RedisService } from 'src/common/redis.service';
-import { UsersService } from 'src/users/users.service';
 import { UserFollow } from 'src/users/schemas/user-follow.schema';
 
 @Injectable()
@@ -43,8 +42,22 @@ export class NewsService {
   }
 
   async deleteById(id: string): Promise<News> {
-    console.log(id);
-    return this.newsModel.findByIdAndDelete(id).exec();
+    const news = await this.newsModel.findByIdAndDelete(id).exec();
+
+    if (news) {
+      this.redisService.deleteKey(`news:${id}`);
+    }
+
+    const schoolId = news.school.toString();
+    const followers = await this.userFollowModel
+      .find({ school: schoolId })
+      .exec();
+    const followerIds = followers.map((follower) => follower.user.toString());
+    followerIds.forEach((followerId) => {
+      this.redisService.lrem(`user:${followerId}:newsfeed`, 0, id);
+    });
+
+    return news;
   }
 
   async updateById(id: string, editNewsDto: EditNewsDto): Promise<News> {

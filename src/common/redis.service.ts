@@ -28,6 +28,10 @@ export class RedisService {
     return JSON.parse(value);
   }
 
+  async deleteKey(key: string): Promise<void> {
+    await this.redisClient.del(key);
+  }
+
   async lpush(key: string, value: string): Promise<void> {
     await this.redisClient.lpush(key, value);
   }
@@ -38,5 +42,9 @@ export class RedisService {
 
   async llen(key: string): Promise<number> {
     return this.redisClient.llen(key);
+  }
+
+  async lrem(key: string, count: number, value: string): Promise<void> {
+    await this.redisClient.lrem(key, count, value);
   }
 }
