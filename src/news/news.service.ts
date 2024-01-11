@@ -31,9 +31,13 @@ export class NewsService {
       .find({ school: schoolId })
       .exec();
     const followerIds = followers.map((follower) => follower.user.toString());
-    followerIds.forEach((followerId) => {
-      this.redisService.lpush(`user:${followerId}:newsfeed`, createdNewsId);
-    });
+
+    const pushToNewsfeedPromises = followerIds.map((followerId) =>
+      this.redisService.lpush(`user:${followerId}:newsfeed`, createdNewsId),
+    );
+
+    Promise.all(pushToNewsfeedPromises);
+
     return createdNews;
   }
 
@@ -55,9 +59,12 @@ export class NewsService {
       .find({ school: schoolId })
       .exec();
     const followerIds = followers.map((follower) => follower.user.toString());
-    followerIds.forEach((followerId) => {
-      this.redisService.lrem(`user:${followerId}:newsfeed`, 0, id);
-    });
+
+    const removeFromNewsfeedPromises = followerIds.map((followerId) =>
+      this.redisService.lrem(`user:${followerId}:newsfeed`, 0, id),
+    );
+
+    Promise.all(removeFromNewsfeedPromises);
 
     return news;
   }
