@@ -6,7 +6,7 @@ export type SchoolDocument = HydratedDocument<School>;
 
 @Schema({ timestamps: true, id: false })
 export class School {
-  @Prop({ required: true })
+  @Prop({ required: true, index: true })
   name: string;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Admin' })

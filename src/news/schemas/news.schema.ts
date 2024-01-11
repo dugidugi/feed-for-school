@@ -6,7 +6,7 @@ export type NewsDocument = HydratedDocument<News>;
 
 @Schema({ timestamps: true, id: false })
 export class News {
-  @Prop({ required: true })
+  @Prop({ required: true, index: true })
   title: string;
 
   @Prop({ required: true })
@@ -17,6 +17,9 @@ export class News {
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'School' })
   school: Admin;
+
+  @Prop({ index: true })
+  createdAt: Date;
 }
 
 export const NewsSchema = SchemaFactory.createForClass(News);
