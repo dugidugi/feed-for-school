@@ -54,10 +54,9 @@ export class NewsService {
   async findById(id: string): Promise<News> {
     const cachedNews = await this.redisService.getValue<News>(`news:${id}`);
     if (cachedNews) {
-      console.log('from cache');
       return cachedNews;
     }
-    console.log('from db');
+
     const news = await this.newsModel.findById(id).exec();
     this.redisService.setValue(`news:${id}`, news);
     return news;
