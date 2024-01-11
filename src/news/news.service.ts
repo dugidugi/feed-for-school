@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { News } from './schemas/news.schema';
 import { Model } from 'mongoose';
@@ -44,9 +44,11 @@ export class NewsService {
   async deleteById(id: string): Promise<News> {
     const news = await this.newsModel.findByIdAndDelete(id).exec();
 
-    if (news) {
-      this.redisService.deleteKey(`news:${id}`);
+    if (!news) {
+      throw new NotFoundException(`News with id ${id} not found`);
     }
+
+    this.redisService.deleteKey(`news:${id}`);
 
     const schoolId = news.school.toString();
     const followers = await this.userFollowModel
