@@ -4,12 +4,15 @@ import { InjectModel } from '@nestjs/mongoose';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UserFollow } from './schemas/user-follow.schema';
+import { News } from 'src/news/schemas/news.schema';
+import { RedisService } from 'src/common/redis.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(UserFollow.name) private userFollowModel: Model<UserFollow>,
+    private readonly redisService: RedisService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -54,5 +57,22 @@ export class UsersService {
     const userIds = userFollows.map((userFollow) => userFollow.user.toString());
 
     return userIds;
+  }
+
+  async getUserNewsFeed(userId: string): Promise<News[]> {
+    const newsIds = await this.redisService.lrange(
+      `user:${userId}:newsfeed`,
+      0,
+      -1,
+    );
+    console.log({ newsIds });
+
+    const news = await Promise.all(
+      newsIds.map((newsId) =>
+        this.redisService.getValue<News>(`news:${newsId}`),
+      ),
+    );
+
+    return news;
   }
 }

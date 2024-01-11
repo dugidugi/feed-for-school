@@ -39,4 +39,9 @@ export class UsersController {
   ): Promise<UserFollow> {
     return this.usersService.unfollowSchool(userId, schoolId);
   }
+
+  @Get('/:userId/newsfeed')
+  getNewsFeed(@Param('userId') userId: string): Promise<News[]> {
+    return this.usersService.getUserNewsFeed(userId);
+  }
 }

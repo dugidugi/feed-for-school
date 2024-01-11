@@ -24,7 +24,16 @@ export class RedisService {
     await this.redisClient.set(key, JSON.stringify(value));
   }
 
+  async getValue<T>(key: string): Promise<T> {
+    const value = await this.redisClient.get(key);
+    return JSON.parse(value);
+  }
+
   async lpush(key: string, value: string): Promise<void> {
     await this.redisClient.lpush(key, value);
+  }
+
+  async lrange(key: string, start: number, end: number): Promise<string[]> {
+    return this.redisClient.lrange(key, start, end);
   }
 }
