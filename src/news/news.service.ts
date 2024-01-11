@@ -1,11 +1,9 @@
-import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { News } from './schemas/news.schema';
 import { Model } from 'mongoose';
 import { CreateNewsDto } from './dtos/create-news.dto';
 import { EditNewsDto } from './dtos/edit-news.dto';
-// import { InjectQueue } from '@nestjs/bull';
-// import { Queue } from 'bull';
 import { RedisService } from 'src/common/redis.service';
 import { UserFollow } from 'src/users/schemas/user-follow.schema';
 
