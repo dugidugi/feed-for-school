@@ -13,19 +13,12 @@ import { UsersService } from 'src/users/users.service';
 export class NewsService {
   constructor(
     @InjectModel(News.name) private newsModel: Model<News>,
-    // @InjectQueue('news-queue') private newsQueue: Queue,
     private readonly redisService: RedisService,
     private readonly usersService: UsersService,
   ) {}
 
   async create(createNewsDto: CreateNewsDto): Promise<News> {
     const createdNews = await new this.newsModel(createNewsDto).save();
-
-    // const followerIds = this.usersService.
-    // await this.newsQueue.add('pushToUserFeed', {
-    //   userIds: ['12', '13'],
-    //   postId: createdNews._id,
-    // });
 
     const createdNewsId = createdNews._id.toString();
 
