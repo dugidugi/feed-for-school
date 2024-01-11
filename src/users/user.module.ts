@@ -14,5 +14,6 @@ import { UserFollow, UserFollowSchema } from './schemas/user-follow.schema';
   ],
   providers: [UsersService],
   controllers: [UsersController],
+  exports: [UsersService],
 })
 export class UsersModule {}

@@ -4,14 +4,43 @@ import { News } from './schemas/news.schema';
 import { Model } from 'mongoose';
 import { CreateNewsDto } from './dtos/create-news.dto';
 import { EditNewsDto } from './dtos/edit-news.dto';
+// import { InjectQueue } from '@nestjs/bull';
+// import { Queue } from 'bull';
+import { RedisService } from 'src/common/redis.service';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class NewsService {
-  constructor(@InjectModel(News.name) private newsModel: Model<News>) {}
+  constructor(
+    @InjectModel(News.name) private newsModel: Model<News>,
+    // @InjectQueue('news-queue') private newsQueue: Queue,
+    private readonly redisService: RedisService,
+    private readonly usersService: UsersService,
+  ) {}
 
   async create(createNewsDto: CreateNewsDto): Promise<News> {
-    const createdNews = new this.newsModel(createNewsDto);
-    return createdNews.save();
+    const createdNews = await new this.newsModel(createNewsDto).save();
+
+    // const followerIds = this.usersService.
+    // await this.newsQueue.add('pushToUserFeed', {
+    //   userIds: ['12', '13'],
+    //   postId: createdNews._id,
+    // });
+
+    const createdNewsId = createdNews._id.toString();
+
+    // cache-news:id
+    this.redisService.setValue(`news:${createdNewsId}`, createdNews);
+
+    // cache-user:userId:newsfeed (list)
+    const schoolId = createdNews.school.toString();
+    console.log({ schoolId });
+    const followers = await this.usersService.getFollwersBySchoolId(schoolId);
+    console.log({ followers });
+    followers.forEach((followerId) => {
+      this.redisService.lpush(`user:${followerId}:newsfeed`, createdNewsId);
+    });
+    return createdNews;
   }
 
   async findAll(): Promise<News[]> {
