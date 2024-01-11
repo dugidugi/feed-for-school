@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './schemas/user.schema';
 import { UserFollow, UserFollowSchema } from './schemas/user-follow.schema';
 import { RedisService } from 'src/common/redis.service';
+import { NewsModule } from 'src/news/news.module';
 
 @Module({
   imports: [
@@ -12,9 +13,9 @@ import { RedisService } from 'src/common/redis.service';
       { name: User.name, schema: UserSchema },
       { name: UserFollow.name, schema: UserFollowSchema },
     ]),
+    NewsModule,
   ],
   providers: [UsersService, RedisService],
   controllers: [UsersController],
-  exports: [UsersService],
 })
 export class UsersModule {}

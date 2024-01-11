@@ -8,13 +8,14 @@ import { EditNewsDto } from './dtos/edit-news.dto';
 // import { Queue } from 'bull';
 import { RedisService } from 'src/common/redis.service';
 import { UsersService } from 'src/users/users.service';
+import { UserFollow } from 'src/users/schemas/user-follow.schema';
 
 @Injectable()
 export class NewsService {
   constructor(
     @InjectModel(News.name) private newsModel: Model<News>,
+    @InjectModel(UserFollow.name) private userFollowModel: Model<UserFollow>,
     private readonly redisService: RedisService,
-    private readonly usersService: UsersService,
   ) {}
 
   async create(createNewsDto: CreateNewsDto): Promise<News> {
@@ -27,8 +28,11 @@ export class NewsService {
 
     // cache-user:userId:newsfeed (list)
     const schoolId = createdNews.school.toString();
-    const followers = await this.usersService.getFollwersBySchoolId(schoolId);
-    followers.forEach((followerId) => {
+    const followers = await this.userFollowModel
+      .find({ school: schoolId })
+      .exec();
+    const followerIds = followers.map((follower) => follower.user.toString());
+    followerIds.forEach((followerId) => {
       this.redisService.lpush(`user:${followerId}:newsfeed`, createdNewsId);
     });
     return createdNews;
@@ -45,5 +49,17 @@ export class NewsService {
 
   async updateById(id: string, editNewsDto: EditNewsDto): Promise<News> {
     return this.newsModel.findByIdAndUpdate(id, editNewsDto, { new: true });
+  }
+
+  async findById(id: string): Promise<News> {
+    const cachedNews = await this.redisService.getValue<News>(`news:${id}`);
+    if (cachedNews) {
+      console.log('from cache');
+      return cachedNews;
+    }
+    console.log('from db');
+    const news = await this.newsModel.findById(id).exec();
+    this.redisService.setValue(`news:${id}`, news);
+    return news;
   }
 }

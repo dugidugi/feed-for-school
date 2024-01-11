@@ -1,11 +1,12 @@
-import { Model } from 'mongoose';
-import { User } from './schemas/user.schema';
-import { InjectModel } from '@nestjs/mongoose';
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { RedisService } from 'src/common/redis.service';
+import { News } from 'src/news/schemas/news.schema';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UserFollow } from './schemas/user-follow.schema';
-import { News } from 'src/news/schemas/news.schema';
-import { RedisService } from 'src/common/redis.service';
+import { User } from './schemas/user.schema';
+import { NewsService } from 'src/news/news.service';
 
 @Injectable()
 export class UsersService {
@@ -13,6 +14,7 @@ export class UsersService {
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(UserFollow.name) private userFollowModel: Model<UserFollow>,
     private readonly redisService: RedisService,
+    private readonly newsService: NewsService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -50,28 +52,17 @@ export class UsersService {
     });
   }
 
-  async getFollwersBySchoolId(schoolId: string): Promise<string[]> {
-    const userFollows = await this.userFollowModel
-      .find({ school: schoolId })
-      .exec();
-    const userIds = userFollows.map((userFollow) => userFollow.user.toString());
-
-    return userIds;
-  }
-
   async getUserNewsFeed(userId: string): Promise<News[]> {
     const newsIds = await this.redisService.lrange(
       `user:${userId}:newsfeed`,
       0,
       -1,
     );
-    console.log({ newsIds });
 
     const news = await Promise.all(
-      newsIds.map((newsId) =>
-        this.redisService.getValue<News>(`news:${newsId}`),
-      ),
+      newsIds.map((newsId) => this.newsService.findById(newsId)),
     );
+    //TODO: SORT, Page 신경쓰기
 
     return news;
   }
