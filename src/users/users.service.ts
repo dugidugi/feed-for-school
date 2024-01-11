@@ -70,9 +70,12 @@ export class UsersService {
       end,
     );
 
-    const news = await Promise.all(
-      newsIds.map((newsId) => this.newsService.findById(newsId)),
+    const newsPromises = newsIds.map((newsId) =>
+      this.newsService.findById(newsId),
     );
+
+    const news = await Promise.all(newsPromises);
+
     const totalItems = await this.redisService.llen(`user:${userId}:newsfeed`);
     const totalPages = Math.ceil(totalItems / pageSize);
 
