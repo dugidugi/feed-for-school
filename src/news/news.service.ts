@@ -70,7 +70,22 @@ export class NewsService {
   }
 
   async updateById(id: string, editNewsDto: EditNewsDto): Promise<News> {
-    return this.newsModel.findByIdAndUpdate(id, editNewsDto, { new: true });
+    const updatedNews = await this.newsModel.findByIdAndUpdate(
+      id,
+      editNewsDto,
+      {
+        new: true,
+      },
+    );
+    if (!updatedNews) {
+      throw new NotFoundException(`News with id ${id} not found`);
+    }
+
+    const updatedNewsId = updatedNews._id.toString();
+
+    this.redisService.setValue(`news:${updatedNewsId}`, updatedNews);
+
+    return updatedNews;
   }
 
   async findById(id: string): Promise<News> {
