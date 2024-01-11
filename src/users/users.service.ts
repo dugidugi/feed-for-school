@@ -46,4 +46,13 @@ export class UsersService {
       school: schoolId,
     });
   }
+
+  async getFollwersBySchoolId(schoolId: string): Promise<string[]> {
+    const userFollows = await this.userFollowModel
+      .find({ school: schoolId })
+      .exec();
+    const userIds = userFollows.map((userFollow) => userFollow.user.toString());
+
+    return userIds;
+  }
 }
