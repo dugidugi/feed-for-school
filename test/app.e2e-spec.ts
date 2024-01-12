@@ -11,6 +11,7 @@ import { MongooseModule, getModelToken } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { School } from '@src/schools/schemas/school.schema';
 import { News } from '@src/news/schemas/news.schema';
+import { RedisService } from '@src/redis/redis.service';
 
 describe('App Testing (e2e)', () => {
   let app: INestApplication;
@@ -41,6 +42,7 @@ describe('App Testing (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+
     await app.init();
   });
 
@@ -57,6 +59,8 @@ describe('App Testing (e2e)', () => {
       getModelToken('UserFollow'),
     );
     await userFollowModel.deleteMany({});
+    const redisService = moduleFixture.get<RedisService>(RedisService);
+    await redisService.flushAll();
 
     await app.close();
   });
