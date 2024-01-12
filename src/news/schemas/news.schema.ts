@@ -6,6 +6,8 @@ export type NewsDocument = HydratedDocument<News>;
 
 @Schema({ timestamps: true, id: false })
 export class News {
+  _id: string;
+
   @Prop({ required: true, index: true })
   title: string;
 
