@@ -51,6 +51,10 @@ describe('App Testing (e2e)', () => {
     await schoolModel.deleteMany({});
     const newsModel: Model<any> = moduleFixture.get(getModelToken('News'));
     await newsModel.deleteMany({});
+    const userFollowModel: Model<any> = moduleFixture.get(
+      getModelToken('UserFollow'),
+    );
+    await userFollowModel.deleteMany({});
 
     await app.close();
   });
@@ -189,6 +193,14 @@ describe('App Testing (e2e)', () => {
       expect(userFollows[0].school).toBe(createdSchool._id);
 
       console.log({ userFollows });
+    });
+  });
+
+  describe('/users/:userId/following/:schoolId (DELETE)', () => {
+    it('unfollows school', async () => {
+      await request(app.getHttpServer())
+        .delete(`/users/${createdUser._id}/following/${createdSchool._id}`)
+        .expect(HttpStatus.OK);
     });
   });
 });
