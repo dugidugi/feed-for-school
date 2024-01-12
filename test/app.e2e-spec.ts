@@ -289,4 +289,25 @@ describe('App Testing (e2e)', () => {
         .expect(HttpStatus.OK);
     });
   });
+
+  describe('/users/:userId/newsfeed (GET)', () => {
+    it('gets user newsfeed', async () => {
+      const response = await request(app.getHttpServer())
+        .get(`/users/${createdUser._id}/newsfeed?pageSize=3&page=1`)
+        .expect(HttpStatus.OK);
+
+      const newsfeed = response.body.data;
+      expect(newsfeed).toHaveLength(1);
+      expect(newsfeed[0]).toHaveProperty('_id');
+      expect(newsfeed[0]).toHaveProperty('title');
+      expect(newsfeed[0]).toHaveProperty('content');
+      expect(newsfeed[0]).toHaveProperty('school');
+      expect(newsfeed[0]).toHaveProperty('admin');
+      expect(newsfeed[0]).toHaveProperty('createdAt');
+      expect(newsfeed[0]).toHaveProperty('updatedAt');
+
+      expect(newsfeed[0].title).toBe(updatedNews.title);
+      expect(newsfeed[0].content).toBe(updatedNews.content);
+    });
+  });
 });
