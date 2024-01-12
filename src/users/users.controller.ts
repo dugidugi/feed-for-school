@@ -17,6 +17,8 @@ import {
   PaginationResponseDto,
 } from '@src/common/dtos/pagination.dto';
 import { BasicResponseDto } from '@src/common/dtos/response.dto';
+import { GetFollowingSortingDto } from './dtos/get-following-sorting.dto';
+import { get } from 'http';
 
 @Controller('users')
 export class UsersController {
@@ -46,8 +48,13 @@ export class UsersController {
   getFollowing(
     @Param('userId') userId: string,
     @Query() paginationDto: PaginationDto,
+    @Query() getFollowingSortingDto: GetFollowingSortingDto,
   ): Promise<PaginationResponseDto<UserFollow>> {
-    return this.usersService.getFollowing(userId, paginationDto);
+    return this.usersService.getFollowing(
+      userId,
+      paginationDto,
+      getFollowingSortingDto,
+    );
   }
 
   @Delete('/:userId/following/:schoolId')

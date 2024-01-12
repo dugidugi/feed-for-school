@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, SortOrder } from 'mongoose';
 import { RedisService } from '@src/redis/redis.service';
 import { News } from '@src/news/schemas/news.schema';
 import { CreateUserDto } from './dtos/create-user.dto';
@@ -12,6 +12,7 @@ import {
   PaginationResponseDto,
 } from 'src/common/dtos/pagination.dto';
 import { BasicResponseDto } from 'src/common/dtos/response.dto';
+import { GetFollowingSortingDto } from './dtos/get-following-sorting.dto';
 
 @Injectable()
 export class UsersService {
@@ -57,6 +58,7 @@ export class UsersService {
   async getFollowing(
     userId: string,
     paginationDto: PaginationDto,
+    getFollowingSortingDto: GetFollowingSortingDto,
   ): Promise<PaginationResponseDto<UserFollow>> {
     const { page, pageSize } = paginationDto;
     const start = (page - 1) * pageSize;
@@ -67,8 +69,11 @@ export class UsersService {
 
     const totalPages = Math.ceil(totalItems / pageSize);
 
+    const [field, order] = getFollowingSortingDto.sort.split('.');
+
     const userFollows = await this.userFollowModel
       .find({ user: userId })
+      .sort({ [field]: order as SortOrder })
       .skip(start)
       .limit(pageSize)
       .exec();
