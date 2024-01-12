@@ -19,6 +19,7 @@ describe('App Testing (e2e)', () => {
   let createdUser: User;
   let createdSchool: School;
   let createdNews: News;
+  let updatedNews: News;
 
   const testAdminUser: CreateAdminDto = {
     name: '김선생',
@@ -243,7 +244,7 @@ describe('App Testing (e2e)', () => {
         .send(newsUpdate)
         .expect(HttpStatus.OK);
 
-      const updatedNews = response.body.data;
+      updatedNews = response.body.data;
 
       expect(updatedNews).toHaveProperty('_id');
       expect(updatedNews).toHaveProperty('title');
@@ -255,6 +256,29 @@ describe('App Testing (e2e)', () => {
 
       expect(updatedNews.title).toBe(newsUpdate.title);
       expect(updatedNews.content).toBe(newsUpdate.content);
+    });
+  });
+
+  describe('schools/:schoolId/news (GET)', () => {
+    it('gets school news', async () => {
+      const response = await request(app.getHttpServer())
+        .get(
+          `/schools/${createdSchool._id}/news?pageSize=3&page=1&sort=createdAt.asc`,
+        )
+        .expect(HttpStatus.OK);
+
+      const schoolNews = response.body.data;
+      expect(schoolNews).toHaveLength(1);
+      expect(schoolNews[0]).toHaveProperty('_id');
+      expect(schoolNews[0]).toHaveProperty('title');
+      expect(schoolNews[0]).toHaveProperty('content');
+      expect(schoolNews[0]).toHaveProperty('school');
+      expect(schoolNews[0]).toHaveProperty('admin');
+      expect(schoolNews[0]).toHaveProperty('createdAt');
+      expect(schoolNews[0]).toHaveProperty('updatedAt');
+
+      expect(schoolNews[0].title).toBe(updatedNews.title);
+      expect(schoolNews[0].content).toBe(updatedNews.content);
     });
   });
 
