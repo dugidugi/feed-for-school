@@ -22,14 +22,14 @@ describe('AdminsController (e2e)', () => {
   });
 
   describe('/admins (POST)', () => {
+    const testAdminUser: CreateAdminDto = {
+      name: '김선생',
+      email: 'kim@gmail.com',
+    };
     it('creates admin', async () => {
-      const createAdminDto: CreateAdminDto = {
-        name: '김선생',
-      };
-
       const response = await request(app.getHttpServer())
         .post('/admins')
-        .send(createAdminDto)
+        .send(testAdminUser)
         .expect(HttpStatus.CREATED);
 
       const createdAdmin: Admin = response.body.data;
@@ -37,7 +37,17 @@ describe('AdminsController (e2e)', () => {
       expect(createdAdmin).toHaveProperty('name');
       expect(createdAdmin).toHaveProperty('createdAt');
       expect(createdAdmin).toHaveProperty('updatedAt');
-      expect(createdAdmin.name).toBe(createAdminDto.name);
+      expect(createdAdmin.name).toBe(testAdminUser.name);
+    });
+
+    it('throws error when email already exists', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/admins')
+        .send(testAdminUser)
+        .expect(HttpStatus.BAD_REQUEST);
+
+      const { message } = response.body;
+      expect(message).toBe('이미 존재하는 email입니다.');
     });
   });
 
