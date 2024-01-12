@@ -24,6 +24,12 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<BasicResponseDto<User>> {
+    const existingUser = await this.userModel.findOne({
+      email: createUserDto.email,
+    });
+    if (existingUser) {
+      throw new BadRequestException('이미 존재하는 email입니다.');
+    }
     const createdUser = await new this.userModel(createUserDto).save();
     return { data: createdUser };
   }
