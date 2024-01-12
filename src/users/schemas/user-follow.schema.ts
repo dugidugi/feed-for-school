@@ -7,6 +7,8 @@ export type UserFollowDocument = HydratedDocument<UserFollow>;
 
 @Schema({ timestamps: true, id: false })
 export class UserFollow {
+  _id: string;
+
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'School', index: true })
   school: School;
 

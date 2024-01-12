@@ -3,13 +3,13 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { CreateAdminDto } from '@src/admins/dtos/create-admin.dto';
 import { Admin } from '@src/admins/schemas/admin.schema';
+import { User } from '@src/users/schemas/user.schema';
 import { AppModule } from '@src/app.module';
 import { CreateUserDto } from '@src/users/dtos/create-user.dto';
-import { User } from '@src/users/schemas/user.schema';
 import { CreateSchoolDto } from '@src/schools/dtos/create-school.dto';
-import { TestConfigModule } from './test.config.module';
 import { MongooseModule, getModelToken } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { School } from '@src/schools/schemas/school.schema';
 
 //TODO : 테스트DB를 따로 만들어서 테스트하도록 수정
 
@@ -17,15 +17,16 @@ describe('App Testing (e2e)', () => {
   let app: INestApplication;
   let createdAdmin: Admin;
   let createdUser: User;
+  let createdSchool: School;
 
   const testAdminUser: CreateAdminDto = {
-    name: '김리자',
-    email: 'kiddssssm@gmail.com',
+    name: '김선생',
+    email: 'kim.teacher@gmail.com',
   };
 
   const testUser: CreateUserDto = {
-    name: '김생',
-    email: 'kimddssmm.student@gmail.com',
+    name: '김학생',
+    email: 'kim.student@gmail.com',
   };
 
   let moduleFixture: TestingModule;
@@ -50,6 +51,8 @@ describe('App Testing (e2e)', () => {
     await adminModel.deleteMany({});
     const schoolModel: Model<any> = moduleFixture.get(getModelToken('School'));
     await schoolModel.deleteMany({});
+    const newsModel: Model<any> = moduleFixture.get(getModelToken('News'));
+    await newsModel.deleteMany({});
 
     await app.close();
   });
@@ -117,7 +120,7 @@ describe('App Testing (e2e)', () => {
   describe('/schools (POST)', () => {
     it('creates school', async () => {
       const testSchool: CreateSchoolDto = {
-        name: '테스트트초등오학교',
+        name: '테스트초등학교',
         address: '서울 강남구 테스트로 123',
         admin: createdAdmin._id,
       };
@@ -127,7 +130,7 @@ describe('App Testing (e2e)', () => {
         .send(testSchool)
         .expect(HttpStatus.CREATED);
 
-      const createdSchool = response.body.data;
+      createdSchool = response.body.data;
 
       console.log({ createdSchool });
       expect(createdSchool).toHaveProperty('_id');
@@ -138,6 +141,34 @@ describe('App Testing (e2e)', () => {
       expect(createdSchool.name).toBe(testSchool.name);
 
       console.log({ createdSchool });
+    });
+  });
+
+  describe('/users/:userId/following/:schoolId (POST)', () => {
+    it('follows school', async () => {
+      const response = await request(app.getHttpServer())
+        .post(`/users/${createdUser._id}/following/${createdSchool._id}`)
+        .expect(HttpStatus.CREATED);
+
+      const userFollow = response.body.data;
+      expect(userFollow).toHaveProperty('_id');
+      expect(userFollow).toHaveProperty('user');
+      expect(userFollow).toHaveProperty('school');
+      expect(userFollow).toHaveProperty('createdAt');
+      expect(userFollow).toHaveProperty('updatedAt');
+      expect(userFollow.user).toBe(createdUser._id);
+      expect(userFollow.school).toBe(createdSchool._id);
+
+      console.log({ userFollow });
+    });
+
+    it('throws error when already following school', async () => {
+      const response = await request(app.getHttpServer())
+        .post(`/users/${createdUser._id}/following/${createdSchool._id}`)
+        .expect(HttpStatus.BAD_REQUEST);
+
+      const { message } = response.body;
+      expect(message).toBe('already following');
     });
   });
 });
