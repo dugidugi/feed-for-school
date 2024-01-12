@@ -44,7 +44,6 @@ export class SchoolsService {
 
     const [field, order] = getSchoolNewsSortingDto.sort.split('.');
 
-    console.log(field, order);
     const totalItems = await this.newsModel.countDocuments({
       school: schoolId,
     });
