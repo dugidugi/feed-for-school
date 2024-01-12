@@ -50,15 +50,13 @@ export class UsersService {
     if (alreadyFollow) {
       throw new BadRequestException('already following');
     }
-    try {
-      const userFollow = await this.userFollowModel.create({
-        school: schoolId,
-        user: userId,
-      });
-      return { data: userFollow };
-    } catch (e) {
-      //TODO
-    }
+
+    const userFollow = await this.userFollowModel.create({
+      school: schoolId,
+      user: userId,
+    });
+
+    return { data: userFollow };
   }
 
   async getFollowing(
