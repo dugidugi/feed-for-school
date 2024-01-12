@@ -1,7 +1,12 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { SchoolsService } from './schools.service';
 import { CreateSchoolDto } from './dtos/create-school.dto';
 import { School } from './schemas/school.schema';
+import {
+  PaginationDto,
+  PaginationResponseDto,
+} from 'src/common/dtos/pagination.dto';
+import { News } from 'src/news/schemas/news.schema';
 
 @Controller('schools')
 export class SchoolsController {
@@ -15,5 +20,13 @@ export class SchoolsController {
   @Get()
   findAll(): Promise<School[]> {
     return this.schoolsService.findAll();
+  }
+
+  @Get('/:schoolId/news')
+  getNews(
+    @Param('schoolId') schoolId: string,
+    @Query() paginationDto: PaginationDto,
+  ): Promise<PaginationResponseDto<News>> {
+    return this.schoolsService.getNewsBySchoolId(schoolId, paginationDto);
   }
 }
