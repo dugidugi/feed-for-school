@@ -70,8 +70,8 @@ export class UsersService {
       end,
     );
 
-    const newsPromises = newsIds.map((newsId) =>
-      this.newsService.findById(newsId),
+    const newsPromises: Promise<News>[] = newsIds.map((newsId) =>
+      this.newsService.findById(newsId).then((news) => news.data),
     );
 
     const news = await Promise.all(newsPromises);
