@@ -1,13 +1,14 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { School } from './schemas/school.schema';
-import { Model } from 'mongoose';
+import { Model, SortOrder } from 'mongoose';
 import {
   PaginationDto,
   PaginationResponseDto,
 } from '@src/common/dtos/pagination.dto';
 import { News } from '@src/news/schemas/news.schema';
 import { BasicResponseDto } from '@src/common/dtos/response.dto';
+import { GetSchoolNewsSortingDto } from './dtos/get-school-news-sorting.dto';
 
 @Injectable()
 export class SchoolsService {
@@ -36,18 +37,22 @@ export class SchoolsService {
   async getNewsBySchoolId(
     schoolId: string,
     paginationDto: PaginationDto,
+    getSchoolNewsSortingDto: GetSchoolNewsSortingDto,
   ): Promise<PaginationResponseDto<News>> {
     const { page, pageSize } = paginationDto;
     const start = (page - 1) * pageSize;
 
+    const [field, order] = getSchoolNewsSortingDto.sort.split('.');
+
+    console.log(field, order);
     const totalItems = await this.newsModel.countDocuments({
       school: schoolId,
     });
-
     const totalPages = Math.ceil(totalItems / pageSize);
 
     const news = await this.newsModel
       .find({ school: schoolId })
+      .sort({ [field]: order as SortOrder })
       .skip(start)
       .limit(pageSize)
       .exec();

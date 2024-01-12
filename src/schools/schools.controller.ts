@@ -8,6 +8,7 @@ import {
 } from '@src/common/dtos/pagination.dto';
 import { News } from '@src/news/schemas/news.schema';
 import { BasicResponseDto } from '@src/common/dtos/response.dto';
+import { GetSchoolNewsSortingDto } from './dtos/get-school-news-sorting.dto';
 
 @Controller('schools')
 export class SchoolsController {
@@ -29,7 +30,12 @@ export class SchoolsController {
   getNews(
     @Param('schoolId') schoolId: string,
     @Query() paginationDto: PaginationDto,
+    @Query() getSchoolNewsSortingDto: GetSchoolNewsSortingDto,
   ): Promise<PaginationResponseDto<News>> {
-    return this.schoolsService.getNewsBySchoolId(schoolId, paginationDto);
+    return this.schoolsService.getNewsBySchoolId(
+      schoolId,
+      paginationDto,
+      getSchoolNewsSortingDto,
+    );
   }
 }
