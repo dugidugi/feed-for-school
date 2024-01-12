@@ -11,8 +11,6 @@ import { MongooseModule, getModelToken } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { School } from '@src/schools/schemas/school.schema';
 
-//TODO : 테스트DB를 따로 만들어서 테스트하도록 수정
-
 describe('App Testing (e2e)', () => {
   let app: INestApplication;
   let createdAdmin: Admin;
@@ -169,6 +167,28 @@ describe('App Testing (e2e)', () => {
 
       const { message } = response.body;
       expect(message).toBe('already following');
+    });
+  });
+
+  describe('/users/:userId/following (GET)', () => {
+    it('gets following schools', async () => {
+      const response = await request(app.getHttpServer())
+        .get(
+          `/users/${createdUser._id}/following?pageSize=10&page=1&sort=createdAt.desc`,
+        )
+        .expect(HttpStatus.OK);
+
+      const userFollows = response.body.data;
+      expect(userFollows).toHaveLength(1);
+      expect(userFollows[0]).toHaveProperty('_id');
+      expect(userFollows[0]).toHaveProperty('user');
+      expect(userFollows[0]).toHaveProperty('school');
+      expect(userFollows[0]).toHaveProperty('createdAt');
+      expect(userFollows[0]).toHaveProperty('updatedAt');
+      expect(userFollows[0].user).toBe(createdUser._id);
+      expect(userFollows[0].school).toBe(createdSchool._id);
+
+      console.log({ userFollows });
     });
   });
 });
