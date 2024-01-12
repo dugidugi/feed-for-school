@@ -45,8 +45,9 @@ export class UsersController {
   @Get('/:userId/following')
   getFollowing(
     @Param('userId') userId: string,
-  ): Promise<BasicResponseDto<UserFollow[]>> {
-    return this.usersService.getFollowing(userId);
+    @Query() paginationDto: PaginationDto,
+  ): Promise<PaginationResponseDto<UserFollow>> {
+    return this.usersService.getFollowing(userId, paginationDto);
   }
 
   @Delete('/:userId/following/:schoolId')

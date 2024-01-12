@@ -54,11 +54,26 @@ export class UsersService {
     }
   }
 
-  async getFollowing(userId: string): Promise<BasicResponseDto<UserFollow[]>> {
+  async getFollowing(
+    userId: string,
+    paginationDto: PaginationDto,
+  ): Promise<PaginationResponseDto<UserFollow>> {
+    const { page, pageSize } = paginationDto;
+    const start = (page - 1) * pageSize;
+
+    const totalItems = await this.userFollowModel.countDocuments({
+      user: userId,
+    });
+
+    const totalPages = Math.ceil(totalItems / pageSize);
+
     const userFollows = await this.userFollowModel
       .find({ user: userId })
+      .skip(start)
+      .limit(pageSize)
       .exec();
-    return { data: userFollows };
+
+    return { data: userFollows, totalItems, totalPages };
   }
 
   async unfollowSchool(
