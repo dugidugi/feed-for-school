@@ -1,7 +1,7 @@
 # Feed for School
 
-- [API Documentation](https://www.postman.com/security-geologist-25974434/workspace/my-workspace/collection/27787806-59307bb3-8362-403f-8b40-14c7ed212162)
-- [Demo API](https://feed-for-school-740b705af3ae.herokuapp.com)
+- [Postman API Documentation](https://www.postman.com/security-geologist-25974434/workspace/my-workspace/collection/27787806-59307bb3-8362-403f-8b40-14c7ed212162)
+- Demo API URL : https://feed-for-school-740b705af3ae.herokuapp.com
 
 ## 프로젝트
 
@@ -77,7 +77,7 @@ Nest.js, MongoDB, Redis 로 구성된 피드 시스템입니다.
 작업 시간이 부족해서 미처 넣지 못한 기능들입니다.
 
 - [ ] User, Admin Auth
-- [ ] User, Admin 기반 Guard
+- [ ] User, Admin Guard
 
 ## Contact
 
