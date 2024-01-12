@@ -16,18 +16,21 @@ import {
   PaginationDto,
   PaginationResponseDto,
 } from 'src/common/dtos/pagination.dto';
+import { BasicResponseDto } from 'src/common/dtos/response.dto';
 
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto): Promise<User> {
+  create(
+    @Body() createUserDto: CreateUserDto,
+  ): Promise<BasicResponseDto<User>> {
     return this.usersService.create(createUserDto);
   }
 
   @Get()
-  findAll(): Promise<User[]> {
+  findAll(): Promise<BasicResponseDto<User[]>> {
     return this.usersService.findAll();
   }
 
@@ -35,12 +38,14 @@ export class UsersController {
   followSchool(
     @Param('userId') userId: string,
     @Param('schoolId') schoolId: string,
-  ): Promise<UserFollow> {
+  ): Promise<BasicResponseDto<UserFollow>> {
     return this.usersService.followSchool(userId, schoolId);
   }
 
   @Get('/:userId/following')
-  getFollowing(@Param('userId') userId: string): Promise<UserFollow[]> {
+  getFollowing(
+    @Param('userId') userId: string,
+  ): Promise<BasicResponseDto<UserFollow[]>> {
     return this.usersService.getFollowing(userId);
   }
 
@@ -48,7 +53,7 @@ export class UsersController {
   unfollowSchool(
     @Param('userId') userId: string,
     @Param('schoolId') schoolId: string,
-  ): Promise<UserFollow> {
+  ): Promise<BasicResponseDto<UserFollow>> {
     return this.usersService.unfollowSchool(userId, schoolId);
   }
 

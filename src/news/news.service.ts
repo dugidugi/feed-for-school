@@ -6,10 +6,7 @@ import { CreateNewsDto } from './dtos/create-news.dto';
 import { EditNewsDto } from './dtos/edit-news.dto';
 import { RedisService } from 'src/common/redis.service';
 import { UserFollow } from 'src/users/schemas/user-follow.schema';
-import {
-  BasicMultipleResponseDto,
-  BasicResponseDto,
-} from 'src/common/dtos/response.dto';
+import { BasicResponseDto } from 'src/common/dtos/response.dto';
 
 @Injectable()
 export class NewsService {
@@ -43,7 +40,7 @@ export class NewsService {
     return { data: createdNews };
   }
 
-  async findAll(): Promise<BasicMultipleResponseDto<News>> {
+  async findAll(): Promise<BasicResponseDto<News[]>> {
     const news = await this.newsModel.find().exec();
     return { data: news };
   }

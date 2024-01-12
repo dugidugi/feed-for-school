@@ -11,6 +11,7 @@ import {
   PaginationDto,
   PaginationResponseDto,
 } from 'src/common/dtos/pagination.dto';
+import { BasicResponseDto } from 'src/common/dtos/response.dto';
 
 @Injectable()
 export class UsersService {
@@ -21,16 +22,20 @@ export class UsersService {
     private readonly newsService: NewsService,
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    const createdUser = new this.userModel(createUserDto);
-    return createdUser.save();
+  async create(createUserDto: CreateUserDto): Promise<BasicResponseDto<User>> {
+    const createdUser = await new this.userModel(createUserDto).save();
+    return { data: createdUser };
   }
 
-  async findAll(): Promise<User[]> {
-    return this.userModel.find().exec();
+  async findAll(): Promise<BasicResponseDto<User[]>> {
+    const users = await this.userModel.find().exec();
+    return { data: users };
   }
 
-  async followSchool(userId: string, schoolId: string): Promise<UserFollow> {
+  async followSchool(
+    userId: string,
+    schoolId: string,
+  ): Promise<BasicResponseDto<UserFollow>> {
     const alreadyFollow = await this.userFollowModel.findOne({
       user: userId,
       school: schoolId,
@@ -39,17 +44,27 @@ export class UsersService {
       throw new BadRequestException('already following');
     }
     try {
-      return this.userFollowModel.create({ school: schoolId, user: userId });
+      const userFollow = await this.userFollowModel.create({
+        school: schoolId,
+        user: userId,
+      });
+      return { data: userFollow };
     } catch (e) {
       //TODO
     }
   }
 
-  async getFollowing(userId: string): Promise<UserFollow[]> {
-    return this.userFollowModel.find({ user: userId }).exec();
+  async getFollowing(userId: string): Promise<BasicResponseDto<UserFollow[]>> {
+    const userFollows = await this.userFollowModel
+      .find({ user: userId })
+      .exec();
+    return { data: userFollows };
   }
 
-  async unfollowSchool(userId: string, schoolId: string): Promise<UserFollow> {
+  async unfollowSchool(
+    userId: string,
+    schoolId: string,
+  ): Promise<BasicResponseDto<UserFollow>> {
     return this.userFollowModel.findOneAndDelete({
       user: userId,
       school: schoolId,

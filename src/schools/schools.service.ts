@@ -7,6 +7,7 @@ import {
   PaginationResponseDto,
 } from 'src/common/dtos/pagination.dto';
 import { News } from 'src/news/schemas/news.schema';
+import { BasicResponseDto } from 'src/common/dtos/response.dto';
 
 @Injectable()
 export class SchoolsService {
@@ -15,7 +16,7 @@ export class SchoolsService {
     @InjectModel(News.name) private newsModel: Model<News>,
   ) {}
 
-  async create(createSchoolDto: any): Promise<School> {
+  async create(createSchoolDto: any): Promise<BasicResponseDto<School>> {
     const existingSchool = await this.schoolModel.findOne({
       admin: { _id: createSchoolDto.admin },
     });
@@ -23,12 +24,13 @@ export class SchoolsService {
     if (existingSchool) {
       throw new BadRequestException('School already exists');
     }
-    const createdSchool = new this.schoolModel(createSchoolDto);
-    return createdSchool.save();
+    const createdSchool = await new this.schoolModel(createSchoolDto).save();
+    return { data: createdSchool };
   }
 
-  async findAll(): Promise<School[]> {
-    return this.schoolModel.find().exec();
+  async findAll(): Promise<BasicResponseDto<School[]>> {
+    const schools = await this.schoolModel.find().exec();
+    return { data: schools };
   }
 
   async getNewsBySchoolId(

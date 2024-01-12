@@ -11,7 +11,6 @@
   - 학교 페이지의 생성
   - 학교 소식 작성, 수정, 삭제
 - 학생
-
   - 학교 페이지 구독 @Post('/:userId/following/:schoolId')
   - 구독중인 학교 페이지 확인 @Get('/:userId/following') TODO-sort
   - 구독중인 학교 페이지 구독 취소 @Delete('/:userId/following/:schoolId')
