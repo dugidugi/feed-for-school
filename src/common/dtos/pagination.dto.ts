@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { IsOptional, IsPositive } from 'class-validator';
+import { IsOptional, IsPositive, Max } from 'class-validator';
 
 export class PaginationDto {
   @Transform(({ value }) => parseInt(value))
@@ -10,6 +10,7 @@ export class PaginationDto {
   @Transform(({ value }) => parseInt(value))
   @IsOptional()
   @IsPositive()
+  @Max(100)
   pageSize?: number = 10;
 }
 
