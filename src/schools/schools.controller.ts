@@ -5,9 +5,9 @@ import { School } from './schemas/school.schema';
 import {
   PaginationDto,
   PaginationResponseDto,
-} from 'src/common/dtos/pagination.dto';
-import { News } from 'src/news/schemas/news.schema';
-import { BasicResponseDto } from 'src/common/dtos/response.dto';
+} from '@src/common/dtos/pagination.dto';
+import { News } from '@src/news/schemas/news.schema';
+import { BasicResponseDto } from '@src/common/dtos/response.dto';
 
 @Controller('schools')
 export class SchoolsController {

@@ -4,8 +4,8 @@ import { UsersController } from './users.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './schemas/user.schema';
 import { UserFollow, UserFollowSchema } from './schemas/user-follow.schema';
-import { RedisService } from 'src/redis/redis.service';
-import { NewsModule } from 'src/news/news.module';
+import { RedisService } from '@src/redis/redis.service';
+import { NewsModule } from '@src/news/news.module';
 
 @Module({
   imports: [

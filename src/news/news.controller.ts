@@ -11,7 +11,7 @@ import { NewsService } from './news.service';
 import { CreateNewsDto } from './dtos/create-news.dto';
 import { News } from './schemas/news.schema';
 import { EditNewsDto } from './dtos/edit-news.dto';
-import { BasicResponseDto } from 'src/common/dtos/response.dto';
+import { BasicResponseDto } from '@src/common/dtos/response.dto';
 
 @Controller('news')
 export class NewsController {

@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Admin } from './schemas/admin.schema';
 import { Model } from 'mongoose';
 import { CreateAdminDto } from './dtos/create-admin.dto';
-import { BasicResponseDto } from 'src/common/dtos/response.dto';
+import { BasicResponseDto } from '@src/common/dtos/response.dto';
 
 @Injectable()
 export class AdminsService {

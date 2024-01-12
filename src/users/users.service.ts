@@ -1,12 +1,12 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { RedisService } from 'src/redis/redis.service';
-import { News } from 'src/news/schemas/news.schema';
+import { RedisService } from '@src/redis/redis.service';
+import { News } from '@src/news/schemas/news.schema';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UserFollow } from './schemas/user-follow.schema';
 import { User } from './schemas/user.schema';
-import { NewsService } from 'src/news/news.service';
+import { NewsService } from '@src/news/news.service';
 import {
   PaginationDto,
   PaginationResponseDto,

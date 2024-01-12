@@ -11,12 +11,12 @@ import { UsersService } from './users.service';
 import { User } from './schemas/user.schema';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UserFollow } from './schemas/user-follow.schema';
-import { News } from 'src/news/schemas/news.schema';
+import { News } from '@src/news/schemas/news.schema';
 import {
   PaginationDto,
   PaginationResponseDto,
-} from 'src/common/dtos/pagination.dto';
-import { BasicResponseDto } from 'src/common/dtos/response.dto';
+} from '@src/common/dtos/pagination.dto';
+import { BasicResponseDto } from '@src/common/dtos/response.dto';
 
 @Controller('users')
 export class UsersController {
