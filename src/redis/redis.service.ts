@@ -46,4 +46,8 @@ export class RedisService {
   async lrem(key: string, count: number, value: string): Promise<void> {
     await this.redisClient.lrem(key, count, value);
   }
+
+  async flushAll(): Promise<void> {
+    await this.redisClient.flushall();
+  }
 }
