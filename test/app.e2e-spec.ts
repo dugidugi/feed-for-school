@@ -10,12 +10,14 @@ import { CreateSchoolDto } from '@src/schools/dtos/create-school.dto';
 import { MongooseModule, getModelToken } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { School } from '@src/schools/schemas/school.schema';
+import { News } from '@src/news/schemas/news.schema';
 
 describe('App Testing (e2e)', () => {
   let app: INestApplication;
   let createdAdmin: Admin;
   let createdUser: User;
   let createdSchool: School;
+  let createdNews: News;
 
   const testAdminUser: CreateAdminDto = {
     name: '김선생',
@@ -209,20 +211,46 @@ describe('App Testing (e2e)', () => {
         .send(testNews)
         .expect(HttpStatus.CREATED);
 
-      const news = response.body.data;
-      expect(news).toHaveProperty('_id');
-      expect(news).toHaveProperty('title');
-      expect(news).toHaveProperty('content');
-      expect(news).toHaveProperty('school');
-      expect(news).toHaveProperty('admin');
-      expect(news).toHaveProperty('createdAt');
-      expect(news).toHaveProperty('updatedAt');
-      expect(news.title).toBe(testNews.title);
-      expect(news.content).toBe(testNews.content);
-      expect(news.school).toBe(testNews.school);
-      expect(news.admin).toBe(testNews.admin);
+      createdNews = response.body.data;
+      expect(createdNews).toHaveProperty('_id');
+      expect(createdNews).toHaveProperty('title');
+      expect(createdNews).toHaveProperty('content');
+      expect(createdNews).toHaveProperty('school');
+      expect(createdNews).toHaveProperty('admin');
+      expect(createdNews).toHaveProperty('createdAt');
+      expect(createdNews).toHaveProperty('updatedAt');
+      expect(createdNews.title).toBe(testNews.title);
+      expect(createdNews.content).toBe(testNews.content);
+      expect(createdNews.school).toBe(testNews.school);
+      expect(createdNews.admin).toBe(testNews.admin);
 
-      console.log({ news });
+      console.log({ createdNews });
+    });
+  });
+
+  describe('/news/:newsId (PUT)', () => {
+    it('updates news', async () => {
+      const newsUpdate = {
+        title: '테스트 뉴스 수정',
+        content: '테스트 뉴스 내용 수정',
+      };
+      const response = await request(app.getHttpServer())
+        .put(`/news/${createdNews._id}`)
+        .send(newsUpdate)
+        .expect(HttpStatus.OK);
+
+      const updatedNews = response.body.data;
+
+      expect(updatedNews).toHaveProperty('_id');
+      expect(updatedNews).toHaveProperty('title');
+      expect(updatedNews).toHaveProperty('content');
+      expect(updatedNews).toHaveProperty('school');
+      expect(updatedNews).toHaveProperty('admin');
+      expect(updatedNews).toHaveProperty('createdAt');
+      expect(updatedNews).toHaveProperty('updatedAt');
+
+      expect(updatedNews.title).toBe(newsUpdate.title);
+      expect(updatedNews.content).toBe(newsUpdate.content);
     });
   });
 
