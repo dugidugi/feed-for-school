@@ -3,7 +3,7 @@ import { NewsService } from './news.service';
 import { NewsController } from './news.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { News, NewsSchema } from './schemas/news.schema';
-import { RedisService } from 'src/common/redis.service';
+import { RedisService } from 'src/redis/redis.service';
 import {
   UserFollow,
   UserFollowSchema,

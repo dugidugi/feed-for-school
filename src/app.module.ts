@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AdminsModule } from './admins/admins.module';
 import { SchoolsModule } from './schools/schools.module';
 import { NewsModule } from './news/news.module';
+import { RedisModule } from './redis/redis.module';
 import * as Joi from 'joi';
 
 @Module({
@@ -28,6 +29,7 @@ import * as Joi from 'joi';
     AdminsModule,
     SchoolsModule,
     NewsModule,
+    RedisModule,
   ],
   controllers: [AppController],
   providers: [AppService],

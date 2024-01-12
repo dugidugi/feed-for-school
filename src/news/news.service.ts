@@ -4,7 +4,7 @@ import { News } from './schemas/news.schema';
 import { Model } from 'mongoose';
 import { CreateNewsDto } from './dtos/create-news.dto';
 import { EditNewsDto } from './dtos/edit-news.dto';
-import { RedisService } from 'src/common/redis.service';
+import { RedisService } from 'src/redis/redis.service';
 import { UserFollow } from 'src/users/schemas/user-follow.schema';
 import { BasicResponseDto } from 'src/common/dtos/response.dto';
 
