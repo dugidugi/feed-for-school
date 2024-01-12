@@ -6,6 +6,10 @@ import { CreateNewsDto } from './dtos/create-news.dto';
 import { EditNewsDto } from './dtos/edit-news.dto';
 import { RedisService } from 'src/common/redis.service';
 import { UserFollow } from 'src/users/schemas/user-follow.schema';
+import {
+  BasicMultipleResponseDto,
+  BasicResponseDto,
+} from 'src/common/dtos/response.dto';
 
 @Injectable()
 export class NewsService {
@@ -15,7 +19,7 @@ export class NewsService {
     private readonly redisService: RedisService,
   ) {}
 
-  async create(createNewsDto: CreateNewsDto): Promise<News> {
+  async create(createNewsDto: CreateNewsDto): Promise<BasicResponseDto<News>> {
     const createdNews = await new this.newsModel(createNewsDto).save();
 
     const createdNewsId = createdNews._id.toString();
@@ -36,14 +40,15 @@ export class NewsService {
 
     Promise.all(pushToNewsfeedPromises);
 
-    return createdNews;
+    return { data: createdNews };
   }
 
-  async findAll(): Promise<News[]> {
-    return this.newsModel.find().exec();
+  async findAll(): Promise<BasicMultipleResponseDto<News>> {
+    const news = await this.newsModel.find().exec();
+    return { data: news };
   }
 
-  async deleteById(id: string): Promise<News> {
+  async deleteById(id: string): Promise<BasicResponseDto<News>> {
     const news = await this.newsModel.findByIdAndDelete(id).exec();
 
     if (!news) {
@@ -64,10 +69,13 @@ export class NewsService {
 
     Promise.all(removeFromNewsfeedPromises);
 
-    return news;
+    return { data: news };
   }
 
-  async updateById(id: string, editNewsDto: EditNewsDto): Promise<News> {
+  async updateById(
+    id: string,
+    editNewsDto: EditNewsDto,
+  ): Promise<BasicResponseDto<News>> {
     const updatedNews = await this.newsModel.findByIdAndUpdate(
       id,
       editNewsDto,
@@ -83,17 +91,17 @@ export class NewsService {
 
     this.redisService.setValue(`news:${updatedNewsId}`, updatedNews);
 
-    return updatedNews;
+    return { data: updatedNews };
   }
 
-  async findById(id: string): Promise<News> {
+  async findById(id: string): Promise<BasicResponseDto<News>> {
     const cachedNews = await this.redisService.getValue<News>(`news:${id}`);
     if (cachedNews) {
-      return cachedNews;
+      return { data: cachedNews };
     }
 
     const news = await this.newsModel.findById(id).exec();
     this.redisService.setValue(`news:${id}`, news);
-    return news;
+    return { data: news };
   }
 }
