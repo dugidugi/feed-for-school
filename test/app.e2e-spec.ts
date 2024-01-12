@@ -32,7 +32,7 @@ describe('App Testing (e2e)', () => {
     moduleFixture = await Test.createTestingModule({
       imports: [
         MongooseModule.forRoot(
-          `mongodb+srv://${process.env.TEST_MONGO_USER}:${process.env.TEST_MONGO_PASSWORD}@${process.env.TEST_MONGO_HOST}`,
+          `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}`,
         ),
         AppModule,
       ],
@@ -193,6 +193,36 @@ describe('App Testing (e2e)', () => {
       expect(userFollows[0].school).toBe(createdSchool._id);
 
       console.log({ userFollows });
+    });
+  });
+
+  describe('/news (POST)', () => {
+    it('creates news', async () => {
+      const testNews = {
+        title: '테스트 뉴스',
+        content: '테스트 뉴스 내용',
+        school: createdSchool._id,
+        admin: createdAdmin._id,
+      };
+      const response = await request(app.getHttpServer())
+        .post('/news')
+        .send(testNews)
+        .expect(HttpStatus.CREATED);
+
+      const news = response.body.data;
+      expect(news).toHaveProperty('_id');
+      expect(news).toHaveProperty('title');
+      expect(news).toHaveProperty('content');
+      expect(news).toHaveProperty('school');
+      expect(news).toHaveProperty('admin');
+      expect(news).toHaveProperty('createdAt');
+      expect(news).toHaveProperty('updatedAt');
+      expect(news.title).toBe(testNews.title);
+      expect(news.content).toBe(testNews.content);
+      expect(news.school).toBe(testNews.school);
+      expect(news.admin).toBe(testNews.admin);
+
+      console.log({ news });
     });
   });
 
