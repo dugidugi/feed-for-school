@@ -18,13 +18,22 @@ export class SchoolsService {
   ) {}
 
   async create(createSchoolDto: any): Promise<BasicResponseDto<School>> {
-    const existingSchool = await this.schoolModel.findOne({
+    const existingAdmin = await this.schoolModel.findOne({
       admin: { _id: createSchoolDto.admin },
     });
 
-    if (existingSchool) {
-      throw new BadRequestException('School already exists');
+    if (existingAdmin) {
+      throw new BadRequestException('Admin has a School already');
     }
+
+    const existingSchoolName = await this.schoolModel.findOne({
+      name: createSchoolDto.name,
+    });
+
+    if (existingSchoolName) {
+      throw new BadRequestException('School name already exists');
+    }
+
     const createdSchool = await new this.schoolModel(createSchoolDto).save();
     return { data: createdSchool };
   }
