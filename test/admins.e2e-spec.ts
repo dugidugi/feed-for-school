@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { CreateAdminDto } from '../src/admins/dtos/create-admin.dto';
-import { Admin } from '../src/admins/schemas/admin.schema';
-import { AppModule } from '../src/app.module';
+import { CreateAdminDto } from '@src/admins/dtos/create-admin.dto';
+import { Admin } from '@src/admins/schemas/admin.schema';
+import { AppModule } from '@src/app.module';
 
 describe('AdminsController (e2e)', () => {
   let app: INestApplication;
@@ -21,30 +21,35 @@ describe('AdminsController (e2e)', () => {
     await app.close();
   });
 
-  it('/admins (POST)', async () => {
-    const createAdminDto: CreateAdminDto = {
-      name: '김선생',
-    };
+  describe('/admins (POST)', () => {
+    it('creates admin', async () => {
+      const createAdminDto: CreateAdminDto = {
+        name: '김선생',
+      };
 
-    const response = await request(app.getHttpServer())
-      .post('/admins')
-      .send(createAdminDto)
-      .expect(HttpStatus.CREATED);
+      const response = await request(app.getHttpServer())
+        .post('/admins')
+        .send(createAdminDto)
+        .expect(HttpStatus.CREATED);
 
-    const createdAdmin: Admin = response.body.data;
-    expect(createdAdmin).toHaveProperty('id');
-    expect(createdAdmin.name).toBe(createAdminDto.name);
-
-    // Optionally, you can store the createdAdmin for later use in other tests
+      const createdAdmin: Admin = response.body.data;
+      expect(createdAdmin).toHaveProperty('_id');
+      expect(createdAdmin).toHaveProperty('name');
+      expect(createdAdmin).toHaveProperty('createdAt');
+      expect(createdAdmin).toHaveProperty('updatedAt');
+      expect(createdAdmin.name).toBe(createAdminDto.name);
+    });
   });
 
-  it('/admins (GET)', async () => {
-    const response = await request(app.getHttpServer())
-      .get('/admins')
-      .expect(HttpStatus.OK);
+  describe('/admins (GET)', () => {
+    it('return admins', async () => {
+      const response = await request(app.getHttpServer())
+        .get('/admins')
+        .expect(HttpStatus.OK);
 
-    const admins: Admin[] = response.body.data;
+      const admins: Admin[] = response.body.data;
 
-    expect(Array.isArray(admins)).toBeTruthy();
+      expect(Array.isArray(admins)).toBeTruthy();
+    });
   });
 });
