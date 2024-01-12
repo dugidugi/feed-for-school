@@ -21,6 +21,13 @@
 
 ### 고려한 포인트
 
+### TODO
+
+작업 시간이 부족해서 미처 넣지 못한 기능들입니다.
+
+- [ ] User, Admin Auth
+- [ ] User, Admin 기반 Guard
+
 ..
 
 ### 스택
@@ -28,6 +35,8 @@
 - nest.js
 - mongoDB
 - Redis
+  - 개별 게시물(news) 데이터 캐시
+  - 유저별 뉴스피드 push 시스템
 
 ## 시작하기
 
