@@ -18,7 +18,6 @@ import {
 } from '@src/common/dtos/pagination.dto';
 import { BasicResponseDto } from '@src/common/dtos/response.dto';
 import { GetFollowingSortingDto } from './dtos/get-following-sorting.dto';
-import { get } from 'http';
 
 @Controller('users')
 export class UsersController {
@@ -29,11 +28,6 @@ export class UsersController {
     @Body() createUserDto: CreateUserDto,
   ): Promise<BasicResponseDto<User>> {
     return this.usersService.create(createUserDto);
-  }
-
-  @Get()
-  findAll(): Promise<BasicResponseDto<User[]>> {
-    return this.usersService.findAll();
   }
 
   @Post('/:userId/following/:schoolId')

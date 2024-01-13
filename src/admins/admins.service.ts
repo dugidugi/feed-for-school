@@ -21,9 +21,4 @@ export class AdminsService {
     const createdAdmin = await new this.adminModel(createAdminDto).save();
     return { data: createdAdmin };
   }
-
-  async findAll(): Promise<BasicResponseDto<Admin[]>> {
-    const admins = await this.adminModel.find().exec();
-    return { data: admins };
-  }
 }

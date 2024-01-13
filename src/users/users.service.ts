@@ -38,11 +38,6 @@ export class UsersService {
     return { data: createdUser };
   }
 
-  async findAll(): Promise<BasicResponseDto<User[]>> {
-    const users = await this.userModel.find().exec();
-    return { data: users };
-  }
-
   async followSchool(
     userId: string,
     schoolId: string,

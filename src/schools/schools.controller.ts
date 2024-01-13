@@ -21,11 +21,6 @@ export class SchoolsController {
     return this.schoolsService.create(createSchoolDto);
   }
 
-  @Get()
-  findAll(): Promise<BasicResponseDto<School[]>> {
-    return this.schoolsService.findAll();
-  }
-
   @Get('/:schoolId/news')
   getNews(
     @Param('schoolId') schoolId: string,

@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Put,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Param, Post, Put } from '@nestjs/common';
 import { NewsService } from './news.service';
 import { CreateNewsDto } from './dtos/create-news.dto';
 import { News } from './schemas/news.schema';
@@ -22,11 +14,6 @@ export class NewsController {
     @Body() createNewsDto: CreateNewsDto,
   ): Promise<BasicResponseDto<News>> {
     return this.newsService.create(createNewsDto);
-  }
-
-  @Get()
-  findAll(): Promise<BasicResponseDto<News[]>> {
-    return this.newsService.findAll();
   }
 
   @Delete(':id')

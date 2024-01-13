@@ -42,11 +42,6 @@ export class SchoolsService {
     return { data: createdSchool };
   }
 
-  async findAll(): Promise<BasicResponseDto<School[]>> {
-    const schools = await this.schoolModel.find().exec();
-    return { data: schools };
-  }
-
   async getNewsBySchoolId(
     schoolId: string,
     paginationDto: PaginationDto,

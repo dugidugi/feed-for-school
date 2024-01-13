@@ -44,11 +44,6 @@ export class NewsService {
     return { data: createdNews };
   }
 
-  async findAll(): Promise<BasicResponseDto<News[]>> {
-    const news = await this.newsModel.find().exec();
-    return { data: news };
-  }
-
   async deleteById(id: string): Promise<BasicResponseDto<News>> {
     try {
       const news = await this.newsModel.findByIdAndDelete(id).exec();
