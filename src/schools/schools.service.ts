@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { School } from './schemas/school.schema';
 import { Model, SortOrder } from 'mongoose';
@@ -53,18 +57,22 @@ export class SchoolsService {
 
     const [field, order] = getSchoolNewsSortingDto.sort.split('.');
 
-    const totalItems = await this.newsModel.countDocuments({
-      school: schoolId,
-    });
-    const totalPages = Math.ceil(totalItems / pageSize);
+    try {
+      const totalItems = await this.newsModel.countDocuments({
+        school: schoolId,
+      });
+      const totalPages = Math.ceil(totalItems / pageSize);
 
-    const news = await this.newsModel
-      .find({ school: schoolId })
-      .sort({ [field]: order as SortOrder })
-      .skip(start)
-      .limit(pageSize)
-      .exec();
+      const news = await this.newsModel
+        .find({ school: schoolId })
+        .sort({ [field]: order as SortOrder })
+        .skip(start)
+        .limit(pageSize)
+        .exec();
 
-    return { data: news, totalItems, totalPages };
+      return { data: news, totalItems, totalPages };
+    } catch (err) {
+      throw new InternalServerErrorException(err.message);
+    }
   }
 }

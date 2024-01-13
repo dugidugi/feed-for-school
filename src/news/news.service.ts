@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { News } from './schemas/news.schema';
 import { Model } from 'mongoose';
@@ -46,49 +50,57 @@ export class NewsService {
   }
 
   async deleteById(id: string): Promise<BasicResponseDto<News>> {
-    const news = await this.newsModel.findByIdAndDelete(id).exec();
+    try {
+      const news = await this.newsModel.findByIdAndDelete(id).exec();
 
-    if (!news) {
-      throw new NotFoundException(`News with id ${id} not found`);
+      if (!news) {
+        throw new NotFoundException(`News with id ${id} not found`);
+      }
+
+      this.redisService.deleteKey(`news:${id}`);
+
+      const schoolId = news.school.toString();
+      const followers = await this.userFollowModel
+        .find({ school: schoolId })
+        .exec();
+      const followerIds = followers.map((follower) => follower.user.toString());
+
+      const removeFromNewsfeedPromises = followerIds.map((followerId) =>
+        this.redisService.lrem(`user:${followerId}:newsfeed`, 0, id),
+      );
+
+      Promise.all(removeFromNewsfeedPromises);
+
+      return { data: news };
+    } catch (err) {
+      throw new InternalServerErrorException(err.message);
     }
-
-    this.redisService.deleteKey(`news:${id}`);
-
-    const schoolId = news.school.toString();
-    const followers = await this.userFollowModel
-      .find({ school: schoolId })
-      .exec();
-    const followerIds = followers.map((follower) => follower.user.toString());
-
-    const removeFromNewsfeedPromises = followerIds.map((followerId) =>
-      this.redisService.lrem(`user:${followerId}:newsfeed`, 0, id),
-    );
-
-    Promise.all(removeFromNewsfeedPromises);
-
-    return { data: news };
   }
 
   async updateById(
     id: string,
     editNewsDto: EditNewsDto,
   ): Promise<BasicResponseDto<News>> {
-    const updatedNews = await this.newsModel.findByIdAndUpdate(
-      id,
-      editNewsDto,
-      {
-        new: true,
-      },
-    );
-    if (!updatedNews) {
-      throw new NotFoundException(`News with id ${id} not found`);
+    try {
+      const updatedNews = await this.newsModel.findByIdAndUpdate(
+        id,
+        editNewsDto,
+        {
+          new: true,
+        },
+      );
+      if (!updatedNews) {
+        throw new NotFoundException(`News with id ${id} not found`);
+      }
+
+      const updatedNewsId = updatedNews._id.toString();
+
+      this.redisService.setValue(`news:${updatedNewsId}`, updatedNews);
+
+      return { data: updatedNews };
+    } catch (err) {
+      throw new InternalServerErrorException(err.message);
     }
-
-    const updatedNewsId = updatedNews._id.toString();
-
-    this.redisService.setValue(`news:${updatedNewsId}`, updatedNews);
-
-    return { data: updatedNews };
   }
 
   async findById(id: string): Promise<BasicResponseDto<News>> {

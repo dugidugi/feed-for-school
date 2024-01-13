@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, SortOrder } from 'mongoose';
 import { RedisService } from '@src/redis/redis.service';
@@ -43,20 +47,24 @@ export class UsersService {
     userId: string,
     schoolId: string,
   ): Promise<BasicResponseDto<UserFollow>> {
-    const alreadyFollow = await this.userFollowModel.findOne({
-      user: userId,
-      school: schoolId,
-    });
-    if (alreadyFollow) {
-      throw new BadRequestException('already following');
+    try {
+      const alreadyFollow = await this.userFollowModel.findOne({
+        user: userId,
+        school: schoolId,
+      });
+      if (alreadyFollow) {
+        throw new BadRequestException('already following');
+      }
+
+      const userFollow = await this.userFollowModel.create({
+        school: schoolId,
+        user: userId,
+      });
+
+      return { data: userFollow };
+    } catch (err) {
+      throw new InternalServerErrorException(err.message);
     }
-
-    const userFollow = await this.userFollowModel.create({
-      school: schoolId,
-      user: userId,
-    });
-
-    return { data: userFollow };
   }
 
   async getFollowing(
@@ -66,33 +74,42 @@ export class UsersService {
   ): Promise<PaginationResponseDto<UserFollow>> {
     const { page, pageSize } = paginationDto;
     const start = (page - 1) * pageSize;
+    try {
+      const totalItems = await this.userFollowModel.countDocuments({
+        user: userId,
+      });
 
-    const totalItems = await this.userFollowModel.countDocuments({
-      user: userId,
-    });
+      const totalPages = Math.ceil(totalItems / pageSize);
 
-    const totalPages = Math.ceil(totalItems / pageSize);
+      const [field, order] = getFollowingSortingDto.sort.split('.');
 
-    const [field, order] = getFollowingSortingDto.sort.split('.');
+      const userFollows = await this.userFollowModel
+        .find({ user: userId })
+        .sort({ [field]: order as SortOrder })
+        .skip(start)
+        .limit(pageSize)
+        .exec();
 
-    const userFollows = await this.userFollowModel
-      .find({ user: userId })
-      .sort({ [field]: order as SortOrder })
-      .skip(start)
-      .limit(pageSize)
-      .exec();
-
-    return { data: userFollows, totalItems, totalPages };
+      return { data: userFollows, totalItems, totalPages };
+    } catch (err) {
+      throw new InternalServerErrorException(err.message);
+    }
   }
 
   async unfollowSchool(
     userId: string,
     schoolId: string,
   ): Promise<BasicResponseDto<UserFollow>> {
-    return this.userFollowModel.findOneAndDelete({
-      user: userId,
-      school: schoolId,
-    });
+    try {
+      const userFollow = await this.userFollowModel.findOneAndDelete({
+        user: userId,
+        school: schoolId,
+      });
+
+      return { data: userFollow };
+    } catch (err) {
+      throw new InternalServerErrorException(err.message);
+    }
   }
 
   async getUserNewsFeed(
@@ -109,15 +126,21 @@ export class UsersService {
       end,
     );
 
-    const newsPromises: Promise<News>[] = newsIds.map((newsId) =>
-      this.newsService.findById(newsId).then((news) => news.data),
-    );
+    try {
+      const newsPromises: Promise<News>[] = newsIds.map((newsId) =>
+        this.newsService.findById(newsId).then((news) => news.data),
+      );
 
-    const news = await Promise.all(newsPromises);
+      const news = await Promise.all(newsPromises);
 
-    const totalItems = await this.redisService.llen(`user:${userId}:newsfeed`);
-    const totalPages = Math.ceil(totalItems / pageSize);
+      const totalItems = await this.redisService.llen(
+        `user:${userId}:newsfeed`,
+      );
+      const totalPages = Math.ceil(totalItems / pageSize);
 
-    return { data: news, totalPages, totalItems };
+      return { data: news, totalPages, totalItems };
+    } catch (err) {
+      throw new InternalServerErrorException(err.message);
+    }
   }
 }
