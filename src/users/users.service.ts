@@ -42,24 +42,29 @@ export class UsersService {
     userId: string,
     schoolId: string,
   ): Promise<BasicResponseDto<UserFollow>> {
+    let alreadyFollow;
+
     try {
-      const alreadyFollow = await this.userFollowModel.findOne({
+      alreadyFollow = await this.userFollowModel.findOne({
         user: userId,
         school: schoolId,
       });
-      if (alreadyFollow) {
-        throw new BadRequestException('already following');
-      }
-
-      const userFollow = await this.userFollowModel.create({
-        school: schoolId,
-        user: userId,
-      });
-
-      return { data: userFollow };
     } catch (err) {
       throw new InternalServerErrorException(err.message);
     }
+
+    console.log(alreadyFollow);
+    if (alreadyFollow) {
+      console.log('이미 팔로잉 상태인지 에러에러');
+      throw new BadRequestException('already following');
+    }
+
+    const userFollow = await this.userFollowModel.create({
+      school: schoolId,
+      user: userId,
+    });
+
+    return { data: userFollow };
   }
 
   async getFollowing(
